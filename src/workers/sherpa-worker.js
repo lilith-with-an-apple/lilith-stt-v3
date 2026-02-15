@@ -145,7 +145,7 @@ async function init() {
             onRuntimeInitialized: () => console.log('WASM Runtime Ready')
         };
 
-        importScripts('https://huggingface.co/spaces/k2-fsa/automatic-speech-recognition/resolve/main/wasm/sherpa-onnx-asr.js');
+        importScripts('../lib/sherpa-onnx-asr.js');
 
         const baseUrl = 'https://huggingface.co/reazon-research/reazonspeech-k2-v2/resolve/main/';
         const files = [
