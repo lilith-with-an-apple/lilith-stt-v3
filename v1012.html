@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LILITH Reliable STT</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        #activity-log { height: 150px; overflow-y: auto; border: 1px solid #333; padding: 10px; margin-bottom: 10px; font-size: 0.8rem; background: #111; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 15px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; }
+        #start-btn { background: #22c55e; color: white; }
+        #stop-btn { background: #ef4444; color: white; }
+        button:disabled { opacity: 0.3; }
+        #final-text { margin-top:20px; border:1px solid #333; padding:15px; min-height:200px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>LILITH Reliable STT (v1012)</h1>
+    <div id="status">INITIALIZING...</div>
+    <div id="activity-log"></div>
+    <div class="controls">
+        <button id="start-btn" disabled>開始</button>
+        <button id="stop-btn" disabled>停止</button>
+    </div>
+    <div id="final-text"></div>
+    <script type="module" src="src/main-v1012.js"></script>
+</body>
+</html>
