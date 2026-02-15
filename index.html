@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LILITH STT v3 (Sherpa-ONNX)</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --accent: #3b82f6;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            flex-grow: 1;
+        }
+        header { text-align: center; }
+        h1 { font-size: 1.25rem; margin: 0; color: var(--accent); }
+        
+        #transcription-area {
+            flex-grow: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            position: relative;
+        }
+        
+        #interim-text {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .meter-container {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #volume-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--success);
+            transition: width 0.1s ease;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        #start-btn { background: var(--success); color: white; }
+        #stop-btn { background: var(--error); color: white; }
+        button:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+        button:active { transform: scale(0.98); }
+
+        .status-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding: 0 4px;
+        }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #334155;
+        }
+        .badge.active { background: var(--accent); color: white; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>LILITH STT v3</h1>
+            <div id="model-info" style="font-size: 0.7rem; margin-top: 4px;">WebGPU Acceleration Enabled</div>
+        </header>
+
+        <div id="transcription-area">
+            <span id="final-text"></span>
+            <span id="interim-text"></span>
+            <div id="placeholder" style="color: #475569; position: absolute; top: 16px; left: 16px;">
+                話し始めるとここに文字が表示されます...
+            </div>
+        </div>
+
+        <div class="meter-container">
+            <div id="volume-bar"></div>
+        </div>
+
+        <div class="controls">
+            <button id="start-btn">開始</button>
+            <button id="stop-btn" disabled>停止</button>
+            <button id="copy-log-btn" style="background: #475569;">ログをコピー</button>
+            <button id="download-log-btn" style="background: #475569;">ログを保存 (.txt)</button>
+            <button id="export-btn" style="grid-column: span 2; background: var(--accent);">履歴を保存 (CSV)</button>
+        </div>
+
+        <div class="status-footer">
+            <div id="status">Status: Initializing...</div>
+            <div id="storage-info" class="badge">Cache: Unknown</div>
+        </div>
+
+        <div id="activity-log" style="font-size: 0.7rem; color: #94a3b8; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; height: 80px; overflow-y: hidden; font-family: monospace; border-left: 3px solid var(--accent); margin-top: 8px;">
+            <div>[System] Initializing...</div>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

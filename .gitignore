@@ -1,0 +1,3 @@
+src/lib/model/
+src/workers/*.wasm
+dummy.data
