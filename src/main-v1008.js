@@ -42,13 +42,13 @@ window.onerror = (msg, url, line) => {
 };
 
 async function init() {
-    logActivity('V1007: System Startup...');
+    logActivity('V1008: System Startup...');
     
     try {
         // Clear previous state
         if (activeWorker) activeWorker.terminate();
         
-        activeWorker = new Worker(`src/workers/sherpa-worker-v1007.js`);
+        activeWorker = new Worker(`src/workers/sherpa-worker-v1008.js`);
         
         activeWorker.onerror = (e) => {
             logActivity(`Worker Crash: ${e.message}`, true);

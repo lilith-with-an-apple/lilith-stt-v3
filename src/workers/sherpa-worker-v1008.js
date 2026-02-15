@@ -139,41 +139,55 @@ async function init() {
     try {
         const wasmUrl = 'https://huggingface.co/spaces/k2-fsa/automatic-speech-recognition/resolve/main/wasm/sherpa-onnx-asr.wasm';
         const wasmBinary = await getPersistentFile(wasmUrl, 'sherpa-onnx-asr.wasm');
-        self.Module = {
-            wasmBinary: wasmBinary,
-            locateFile: (p) => p,
-            onRuntimeInitialized: () => console.log('WASM Runtime Ready')
-        };
-
-        importScripts('../lib/sherpa-onnx-asr.js');
-
-        const baseUrl = 'https://huggingface.co/reazon-research/reazonspeech-k2-v2/resolve/main/';
-        const files = [
-            { name: 'encoder.onnx', url: baseUrl + 'encoder-epoch-99-avg-1.int8.onnx' },
-            { name: 'decoder.onnx', url: baseUrl + 'decoder-epoch-99-avg-1.int8.onnx' },
-            { name: 'joiner.onnx', url: baseUrl + 'joiner-epoch-99-avg-1.int8.onnx' },
-            { name: 'tokens.txt', url: baseUrl + 'tokens.txt' }
-        ];
-
-        for (const file of files) {
-            const data = await getPersistentFile(file.url, file.name);
-            self.Module.FS_createDataFile('/', file.name, new Uint8Array(data), true, false, false);
-        }
-
-        recognizer = new OnlineRecognizer({
-            modelConfig: {
-                transducer: { encoder: '/encoder.onnx', decoder: '/decoder.onnx', joiner: '/joiner.onnx' },
-                tokens: '/tokens.txt',
-                numThreads: 1
-            }
-        }, self.Module);
         
-        stream = recognizer.createStream();
-        isReady = true;
-        self.postMessage({ type: 'ready' });
+        return new Promise((resolve, reject) => {
+            self.Module = {
+                wasmBinary: wasmBinary,
+                locateFile: (p) => p,
+                onRuntimeInitialized: async () => {
+                    try {
+                        logToMain('WASM Runtime Ready');
+                        const baseUrl = 'https://huggingface.co/reazon-research/reazonspeech-k2-v2/resolve/main/';
+                        const files = [
+                            { name: 'encoder.onnx', url: baseUrl + 'encoder-epoch-99-avg-1.int8.onnx' },
+                            { name: 'decoder.onnx', url: baseUrl + 'decoder-epoch-99-avg-1.int8.onnx' },
+                            { name: 'joiner.onnx', url: baseUrl + 'joiner-epoch-99-avg-1.int8.onnx' },
+                            { name: 'tokens.txt', url: baseUrl + 'tokens.txt' }
+                        ];
+
+                        for (const file of files) {
+                            const data = await getPersistentFile(file.url, file.name);
+                            self.Module.FS_createDataFile('/', file.name, new Uint8Array(data), true, false, false);
+                        }
+
+                        recognizer = new OnlineRecognizer({
+                            modelConfig: {
+                                transducer: { encoder: '/encoder.onnx', decoder: '/decoder.onnx', joiner: '/joiner.onnx' },
+                                tokens: '/tokens.txt',
+                                numThreads: 1
+                            }
+                        }, self.Module);
+                        
+                        stream = recognizer.createStream();
+                        isReady = true;
+                        self.postMessage({ type: 'ready' });
+                        resolve();
+                    } catch (e) {
+                        self.postMessage({ type: 'error', data: e.message });
+                        reject(e);
+                    }
+                }
+            };
+
+            importScripts('../lib/sherpa-onnx-asr.js');
+        });
     } catch (err) {
         self.postMessage({ type: 'error', data: err.message });
     }
+}
+
+function logToMain(msg) {
+    self.postMessage({ type: 'status', data: msg });
 }
 
 self.onmessage = async (e) => {

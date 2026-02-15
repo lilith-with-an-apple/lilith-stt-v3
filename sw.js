@@ -1,5 +1,5 @@
-// sw.js - Service Worker FINAL V1007
-const CACHE_NAME = 'stt-v3-cache-v1007';
+// sw.js - Service Worker FINAL V1008
+const CACHE_NAME = 'stt-v3-cache-v1008';
 const ASSETS = [
     'index.html',
     'manifest.json',
