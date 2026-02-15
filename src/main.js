@@ -48,7 +48,7 @@ async function init() {
         // Clear previous state
         if (activeWorker) activeWorker.terminate();
         
-        activeWorker = new Worker('src/workers/sherpa-worker.js');
+        activeWorker = new Worker(`src/workers/sherpa-worker.js?v=${new Date().getTime()}`);
         
         activeWorker.onerror = (e) => {
             logActivity(`Worker Crash: ${e.message}`, true);
