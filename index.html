@@ -114,7 +114,7 @@
 <body>
     <div class="app-container">
         <header>
-            <h1>LILITH STT v3 (V1007)</h1>
+            <h1>LILITH STT v3 (V1009)</h1>
             <div id="model-info" style="font-size: 0.7rem; margin-top: 4px;">WebGPU Acceleration Enabled</div>
         </header>
 
@@ -149,14 +149,21 @@
     </div>
 
     <script>
+        // Aggressive Service Worker Clearance
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let registration of registrations) {
-                    registration.unregister();
+                    registration.unregister().then(() => console.log('SW Unregistered'));
                 }
             });
         }
+        // Clear caches
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+            });
+        }
     </script>
-    <script type="module" src="src/main-v1008.js"></script>
+    <script type="module" src="src/main-v1009.js"></script>
 </body>
 </html>
